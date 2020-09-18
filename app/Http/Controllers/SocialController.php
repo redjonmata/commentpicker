@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ReturnType;
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\RedirectResponse;
 use Socialite;
 
@@ -33,7 +35,6 @@ class SocialController extends Controller
      */
     public function handleProviderCallback(string $provider) : RedirectResponse
     {
-        dd("test");
         $data = Socialite::driver('facebook')->stateless()->user();
         return $this->handleUser($data, $provider);
     }
@@ -79,8 +80,9 @@ class SocialController extends Controller
     {
         try {
             $user = new User;
-            $user->name   = $data->name;
+            $user->first_name   = $data->name;
             $user->email  = $data->email;
+            $user->password  = "test";
             $user->access_data = json_encode([
                 $provider => [
                     'id'    => $data->id,
@@ -102,7 +104,14 @@ class SocialController extends Controller
      */
     public function login(User $user) : RedirectResponse
     {
-        auth()->loginUsingId($user->id);
-        return redirect(route('home'));
+        $data = [
+            'email' => $user->email,
+            'password' => 'test'
+        ];
+
+        $authService = new AuthService($data);
+        $loggedIn = $authService->login();
+
+        return response()->json(['type' => ReturnType::SUCCESS] + $loggedIn);
     }
 }
