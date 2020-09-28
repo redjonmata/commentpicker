@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 class UserRequest extends FormRequest
@@ -10,7 +9,7 @@ class UserRequest extends FormRequest
      */
     private $validationRules = [
         'first_name' => 'required|min:3|max:25',
-        'last_name' => 'required|min:3|max:25',
+        'last_name' => 'required|min:3|max:25'
     ];
 
     /**
@@ -33,7 +32,7 @@ class UserRequest extends FormRequest
         # create
         if ($this->isMethod('post')) {
             return $this->validationRules + [
-                    'password' => 'required|min:6|confirmed',
+                    'password' => 'required|min:6',
                     'email' => 'required|email|unique:users'
                 ];
         }
@@ -44,7 +43,7 @@ class UserRequest extends FormRequest
         $userId = get_route_id($this->route());
 
         return $this->validationRules + [
-                'password' => 'sometimes|min:6|confirmed',
+                'password' => 'sometimes|min:6',
                 'email' => 'required|email|unique:users,email,'.$userId,
             ];
     }
