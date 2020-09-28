@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\Audit;
 use App\Services\Search\AuditSearchService;
+use App\Transformers\AuditTransformer;
 
 use DB;
 use Log;

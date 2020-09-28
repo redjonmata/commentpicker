@@ -52,27 +52,26 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
+        $this->validate($request,[
+            'first_name' => 'required|min:3|max:25',
+            'last_name' => 'required|min:3|max:25',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
+        ]);
+
         try {
-
-            DB::beginTransaction();
-
             $user = $this->userService->store($request->all());
 
-            DB::commit();
-
         } catch (Exception $ex) {
-
-            DB::rollback();
-
             return $this->errorResponse($ex);
         }
 
         return response()->json([
             'type' => ReturnType::SUCCESS,
             'user' => $user
-        ], 201)->header('Location', route('users.show', $user->id));
+        ], 201);
     }
 
     /**

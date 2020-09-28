@@ -28,6 +28,15 @@ $router->group(['as' => 'auth'], function () use ($router) {
     $router->get('/{provider}/callback', ['uses' => 'SocialController@handleProviderCallback']);
 //});
 
+// Profile
+$router->group(['middleware' => ['auth:api']], function ($route) {
+    $route->group(['prefix' => 'users', 'as' => 'profile'], function () use ($route) {
+        $route->put('/profile-update', ['uses' => 'ProfileController@updateProfile', 'as' => 'update']);
+        $route->put('/password/change', ['uses' => 'ProfileController@passwordChange', 'as' => 'password.change']);
+        $route->post('/upload-image', ['uses' => 'ProfileController@uploadImage', 'as' => 'upload']);
+    });
+});
+
 $router->group(['middleware' => ['auth:api']], function ($route) {
 
     // Users
@@ -42,6 +51,14 @@ $router->group(['middleware' => ['auth:api']], function ($route) {
         $route->put('/{id}/unblock', ['uses' => 'UserController@unblock', 'as' => 'unblock']);
         $route->put('/{id}/restore', ['uses' => 'UserController@restore', 'as' => 'restore']);
         $route->delete('/{id}/force-delete', ['uses' => 'UserController@forceDelete', 'as' => 'force_delete']);
+    });
+
+    // Audits
+    $route->group(['prefix' => 'audits', 'as' => 'audits'], function () use ($route) {
+        $route->get('/', ['uses' => 'AuditController@getAudits', 'as' => 'get']);
+        $route->get('/types', ['uses' => 'AuditController@getAuditTypes', 'as' => 'types']);
+        $route->get('/events', ['uses' => 'AuditController@getAuditEvents', 'as' => 'events']);
+        $route->get('/export', ['uses' => 'AuditController@export', 'as' => 'export']);
     });
 
 });
